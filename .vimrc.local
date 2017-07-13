@@ -1,0 +1,153 @@
+" Modeline and Notes"{{{
+" vim: set foldmarker={{{,}}} foldmethod=marker:
+"}}}
+
+"UI {{{
+"autocmd GUIEnter * simalt ~x
+"autocmd GUIEnter * sim <F11>
+
+	set gcr=a:blinkon0
+	set noexpandtab
+	set nolist
+	set nospell
+	set guioptions=
+	"set guifont=consolas:h10
+	"set guifont=source\ code\ pro:h10
+	"set guifont=pragmata:h10
+	set guifont=ubuntu\ mono:h12
+
+	set langmenu=none
+	language messages none
+
+	"set background=light
+	set nohlsearch
+	set foldcolumn=1
+"}}}
+
+" CScope {{{
+" below is the minimum key mappings.
+
+    nnoremap <leader>fa :call cscope#findInteractive(expand('<cword>'))<cr>
+    nnoremap <leader>l :call ToggleLocationList()<cr>
+
+" some optional key mappings to search directly.
+
+    " s: find this c symbol
+    nnoremap  <leader>fs :call cscope#find('s', expand('<cword>'))<cr>
+    " g: find this definition
+    nnoremap  <leader>fg :call cscope#find('g', expand('<cword>'))<cr>
+    " d: find functions called by this function
+    nnoremap  <leader>fd :call cscope#find('d', expand('<cword>'))<cr>
+    " c: find functions calling this function
+    nnoremap  <leader>fc :call cscope#find('c', expand('<cword>'))<cr>
+    " t: find this text string
+    nnoremap  <leader>ft :call cscope#find('t', expand('<cword>'))<cr>
+    " e: find this egrep pattern
+    nnoremap  <leader>fe :call cscope#find('e', expand('<cword>'))<cr>
+    " f: find this file
+    nnoremap  <leader>ff :call cscope#find('f', expand('<cword>'))<cr>
+    " i: find files #including this file
+    nnoremap  <leader>fi :call cscope#find('i', expand('<cword>'))<cr>
+
+" what
+	set cscopetag
+	set cst
+
+"}}}
+
+" airline {{{
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#fnamemod = ',t'
+
+let g:airline_extensions = []
+"let g:airline#extensions#tabline#buffer_idx_mode = 1
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+"}}}
+
+" encoding {{{
+"set fileencodings=cp936
+"exvim .vimrc reference
+"" try to set encoding to utf-8
+if WINDOWS()
+    " Be nice and check for multi_byte even if the config requires
+    " multi_byte support most of the time
+    if has('multi_byte')
+        " Windows cmd.exe still uses cp850. If Windows ever moved to
+        " Powershell as the primary terminal, this would be utf-8
+        " hrw
+        " set termencoding=cp850
+        set termencoding=cp932
+        " Let Vim use utf-8 internally, because many scripts require this
+        set encoding=utf-8
+        setglobal fileencoding=
+        " Windows has traditionally used cp1252, so it's probably wise to
+        " fallback into cp1252 instead of eg. iso-8859-15.
+        " Newer Windows files might contain utf-8 or utf-16 LE so we might
+        " want to try them first.
+        set fileencodings=ucs-bom,utf-8,cp932,cp936,utf-16le,cp1252,iso-8859-15
+    endif
+else
+    " set default encoding to utf-8
+    set encoding=utf-8
+    " set termencoding=utf-8
+    set termencoding=cp932
+endif
+scriptencoding utf-8
+"}}}
+
+" Key Mappings {{{
+
+" buffer
+nnoremap <C-Tab> :bnext<CR>
+nnoremap <C-S-Tab> :bprevious<CR>
+
+" screen
+if has('gui_running') && has('win32')
+	map <F11> :call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR>
+	"map <F10> :call libcallnr("vimtweak.dll", "SetAlpha", 200)<CR>
+endif
+
+"fold
+nnoremap <S-Space> za
+
+"}}}
+
+"set foldmarker={,}
+"set foldmethod=syntax
+
+"TagbarToggle
+
+" window zoom {{{
+function! Zoom ()
+    " check if is the zoomed state (tabnumber > 1 && window == 1)
+    if tabpagenr('$') > 1 && tabpagewinnr(tabpagenr(), '$') == 1
+        let l:cur_winview = winsaveview()
+        let l:cur_bufname = bufname('')
+        tabclose
+
+        " restore the view
+        if l:cur_bufname == bufname('')
+            call winrestview(cur_winview)
+        endif
+    else
+        tab split
+    endif
+endfunction
+
+nmap <leader>z :call Zoom()<CR>
+"}}}
+
+
+map <F4> :!call ..\..\..\..\..\..\the-longjing3-build.bat<CR>
+map <C-s> :w<CR>
+imap <C-s> <Esc>:w<CR>
